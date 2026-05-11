@@ -98,7 +98,9 @@ should appear as a hardcoded string anywhere outside that config.
    source-mix table + stacked-over-time bar, quiz funnel; revenue pacing
    tied to the editable target, monthly revenue + ACV, revenue by source,
    ROAS, outstanding A/R mock).
-6. Social Media + Paid Ads
+6. ~~Social Media + Paid Ads~~ — done (per-channel KPIs/follower trend/
+   top posts + Compare view across all 5 channels; Meta campaign table,
+   spend timeline, ad-click-to-lead quiz funnel, Brevo deep-link).
 7. Strategy & Notes
 8. Polish (empty states, loading states, responsive, dark mode, a11y)
 
