@@ -25,6 +25,7 @@ import {
 } from '../helpers';
 import type {
   ChannelRoas,
+  Delta,
   FetchOptions,
   MonthlyRevenuePoint,
   Pacing,
@@ -228,6 +229,20 @@ export function fetchPacing(opts: FetchOptions, targetOverride?: number): Promis
     actualThroughDay: dayOfMonth,
     projection,
   });
+}
+
+/**
+ * Outstanding accounts receivable — a single dollar figure with delta vs.
+ * the prior equal-length window. Until the practice-management software
+ * is wired up, this is mocked; once real, the same signature returns.
+ */
+export function fetchOutstandingAR(opts: FetchOptions): Promise<Delta> {
+  const baseline = 58_000;
+  const rng = seededRng(anchorSeed(`revenue:ar:${toISODate(opts.to)}`));
+  const prevRng = seededRng(anchorSeed(`revenue:ar:${toISODate(opts.from)}`));
+  const current = Math.round(clamp(jitter(rng, baseline, 0.18), 30_000, 95_000));
+  const previous = Math.round(clamp(jitter(prevRng, baseline * 1.03, 0.18), 30_000, 95_000));
+  return ok(makeDelta(current, previous));
 }
 
 // ─── Internals ─────────────────────────────────────────────────────────────

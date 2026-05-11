@@ -94,7 +94,10 @@ should appear as a hardcoded string anywhere outside that config.
 3. ~~Mock data layer~~ — done.
 4. ~~Executive Overview~~ — done (KPI strip, 12-month dual-axis trend,
    signals panel, source donut, marketing funnel).
-5. Patient Acquisition + Revenue
+5. ~~Patient Acquisition + Revenue~~ — done (monthly trends, new-vs-returning,
+   source-mix table + stacked-over-time bar, quiz funnel; revenue pacing
+   tied to the editable target, monthly revenue + ACV, revenue by source,
+   ROAS, outstanding A/R mock).
 6. Social Media + Paid Ads
 7. Strategy & Notes
 8. Polish (empty states, loading states, responsive, dark mode, a11y)

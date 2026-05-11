@@ -1,22 +1,12 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { fmtInt, fmtPct } from '@/lib/format';
-import type { PatientSource, SourceShare } from '@/lib/data';
+import type { SourceShare } from '@/lib/data';
+import { SOURCE_COLOR } from './sourcePalette';
 
 interface Props {
   title?: string;
   data: SourceShare[];
 }
-
-// Sage / mustard / terracotta + tints, matching the brand palette.
-const PALETTE: Record<PatientSource, string> = {
-  'Facebook Ads': 'hsl(var(--sage))',
-  'Physician Referral': 'hsl(var(--terracotta))',
-  'Google Organic': 'hsl(var(--mustard))',
-  'Google Ads': 'hsl(36 60% 48%)',
-  'Direct Referral': 'hsl(153 30% 35%)',
-  'Walk-In': 'hsl(14 40% 65%)',
-  Other: 'hsl(0 0% 70%)',
-};
 
 const SourceDonut = ({ title = 'Traffic source mix', data }: Props) => {
   const total = data.reduce((a, r) => a + r.count, 0);
@@ -43,7 +33,7 @@ const SourceDonut = ({ title = 'Traffic source mix', data }: Props) => {
                 isAnimationActive={false}
               >
                 {data.map(d => (
-                  <Cell key={d.source} fill={PALETTE[d.source] ?? 'hsl(0 0% 70%)'} />
+                  <Cell key={d.source} fill={SOURCE_COLOR[d.source] ?? 'hsl(0 0% 70%)'} />
                 ))}
               </Pie>
               <Tooltip
@@ -67,7 +57,7 @@ const SourceDonut = ({ title = 'Traffic source mix', data }: Props) => {
             <li key={row.source} className="flex items-center gap-2">
               <span
                 className="w-2.5 h-2.5 rounded-sm shrink-0"
-                style={{ background: PALETTE[row.source] ?? 'hsl(0 0% 70%)' }}
+                style={{ background: SOURCE_COLOR[row.source] ?? 'hsl(0 0% 70%)' }}
               />
               <span className="text-foreground flex-1 truncate">{row.source}</span>
               <span className="text-muted-foreground tabular-nums">

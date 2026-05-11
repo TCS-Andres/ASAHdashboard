@@ -20,6 +20,7 @@ export {
   fetchRevenueBySource,
   fetchChannelRoas,
   fetchPacing,
+  fetchOutstandingAR,
 } from './mock/mockRevenue';
 
 export {
