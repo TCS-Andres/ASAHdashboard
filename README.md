@@ -101,7 +101,8 @@ should appear as a hardcoded string anywhere outside that config.
 6. ~~Social Media + Paid Ads~~ — done (per-channel KPIs/follower trend/
    top posts + Compare view across all 5 channels; Meta campaign table,
    spend timeline, ad-click-to-lead quiz funnel, Brevo deep-link).
-7. Strategy & Notes
+7. ~~Strategy & Notes~~ — done (dated entries with markdown body + preset
+   tags, add/edit/delete via dialog, in-memory state with seed entries).
 8. Polish (empty states, loading states, responsive, dark mode, a11y)
 
 ## Out of scope for MVP
