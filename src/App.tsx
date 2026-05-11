@@ -11,6 +11,7 @@ import Revenue from '@/pages/Revenue';
 import SocialMedia from '@/pages/SocialMedia';
 import PaidAds from '@/pages/PaidAds';
 import StrategyNotes from '@/pages/StrategyNotes';
+import DataInput from '@/pages/DataInput';
 import NotFound from '@/pages/NotFound';
 
 const queryClient = new QueryClient({
@@ -38,6 +39,7 @@ const App = () => (
               <Route path="social" element={<SocialMedia />} />
               <Route path="ads" element={<PaidAds />} />
               <Route path="strategy" element={<StrategyNotes />} />
+              <Route path="data" element={<DataInput />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

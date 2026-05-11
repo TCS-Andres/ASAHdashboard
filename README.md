@@ -123,16 +123,41 @@ contacts surface.
 - Email/SMS notifications
 - PDF export
 
-## Editable targets
+## Practice data store (targets + actuals)
 
-Monthly revenue and monthly new-patient targets are **user-editable** via
-the "Targets" button in the top bar. Values are persisted per-client in
-`localStorage` (key `asah:targets:<clientId>`). The pacing visualizations
-on the Revenue and Patient Acquisition tabs read these values via the
-`useTargets()` hook in [src/lib/targets.ts](src/lib/targets.ts).
+The practice owner / CMO can input two kinds of operational data:
 
-Targets are **not** PHI — they're operational goals. Storing them in
-`localStorage` is HIPAA-safe.
+**Targets** (goals) across five metrics:
+- Monthly revenue
+- Monthly new patients
+- Monthly ad spend
+- Lead-to-patient conversion %
+- Cost per acquisition
+
+Each metric has a *default* value plus optional *per-month overrides*. The
+per-month override wins for that month; otherwise the default applies.
+
+**Actuals** (what really happened) across five metrics per month:
+- Revenue, new patients, returning patients, leads, ad spend
+
+Where actuals are entered, they overlay the mock fallback on every chart.
+Months without actuals continue to show mock data, so the dashboard always
+feels alive even before the practice has back-filled history.
+
+**Where the inputs live:**
+- Topbar "Targets" button — quick-edit the default targets or the
+  current month's override.
+- "Data" tab in the sidebar — full table editor for the trailing 18
+  months (or further back via pagination), switchable between the
+  Actuals view and the Per-month Targets view, plus a Defaults section
+  at the top.
+
+All values are persisted per-client in `localStorage` under
+`asah:practice:<clientId>` via [src/lib/practice.ts](src/lib/practice.ts).
+The legacy `asah:targets:<clientId>` key is auto-migrated on first load.
+
+Targets and actuals are **not** PHI — they're operational aggregates
+(dollars, counts, rates). `localStorage` is HIPAA-safe for them.
 
 ## Brevo, not a CRM
 

@@ -18,7 +18,7 @@ export interface ClientConfig {
   /**
    * Default monthly targets, used as the seed value for the editable
    * targets store. The live values that drive pacing visualizations
-   * come from src/lib/targets.ts and may be overridden by the user.
+   * come from src/lib/practice.ts and may be overridden by the user.
    */
   defaultTargets: {
     monthlyRevenue: number;

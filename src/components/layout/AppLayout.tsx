@@ -7,6 +7,7 @@ import {
   Share2,
   Megaphone,
   NotebookPen,
+  Table,
   Menu,
   Calendar,
 } from 'lucide-react';
@@ -22,6 +23,7 @@ const navItems = [
   { to: '/social', icon: Share2, label: 'Social Media' },
   { to: '/ads', icon: Megaphone, label: 'Paid Ads' },
   { to: '/strategy', icon: NotebookPen, label: 'Strategy & Notes' },
+  { to: '/data', icon: Table, label: 'Data' },
 ];
 
 const PRESETS: DateRangePreset[] = ['7d', '30d', '90d', 'mtd', 'last-month', 'custom'];

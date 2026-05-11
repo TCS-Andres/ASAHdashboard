@@ -1,7 +1,8 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Receipt } from 'lucide-react';
 import { useDateRange, PRESET_LABELS } from '@/lib/dateRange';
-import { useTargets } from '@/lib/targets';
+import { useTargets, usePracticeData } from '@/lib/practice';
 import {
   fetchChannelRoas,
   fetchMonthlyRevenue,
@@ -43,6 +44,23 @@ const Revenue = () => {
     queryFn: () => fetchOutstandingAR(opts),
   });
 
+  // Overlay user-entered monthly actuals on the mock revenue series.
+  // Average case value is recomputed from actuals when both revenue and
+  // new-patient count are user-entered for that month.
+  const { data: practice } = usePracticeData();
+  const monthlyMerged = useMemo(() => {
+    if (!monthly.data) return undefined;
+    return monthly.data.map(d => {
+      const a = practice.actualsByMonth[d.month];
+      const revenue = a?.revenue ?? d.revenue;
+      const acv =
+        a?.revenue != null && a?.newPatients && a.newPatients > 0
+          ? Math.round(a.revenue / a.newPatients)
+          : d.averageCaseValue;
+      return { ...d, revenue, averageCaseValue: acv };
+    });
+  }, [monthly.data, practice.actualsByMonth]);
+
   return (
     <div className="space-y-4">
       <header>
@@ -59,23 +77,23 @@ const Revenue = () => {
 
       {/* Monthly revenue + ACV trend */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {monthly.data ? (
+        {monthlyMerged ? (
           <MonthlyTrend
             title="Monthly revenue"
             subtitle="Trailing 12 months"
-            data={monthly.data.map(d => ({ month: d.month, value: d.revenue }))}
+            data={monthlyMerged.map(d => ({ month: d.month, value: d.revenue }))}
             format={v => fmtCurrency(v, { compact: true })}
             color="hsl(var(--sage))"
           />
         ) : (
           <Skeleton className="h-72 w-full rounded-xl" />
         )}
-        {monthly.data ? (
+        {monthlyMerged ? (
           <MonthlyTrend
             title="Average case value"
             subtitle="Trailing 12 months"
             kind="line"
-            data={monthly.data.map(d => ({ month: d.month, value: d.averageCaseValue }))}
+            data={monthlyMerged.map(d => ({ month: d.month, value: d.averageCaseValue }))}
             format={v => fmtCurrency(v)}
             color="hsl(var(--terracotta))"
           />

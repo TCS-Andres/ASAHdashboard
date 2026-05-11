@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useDateRange, PRESET_LABELS } from '@/lib/dateRange';
 import {
@@ -6,6 +7,7 @@ import {
   fetchSourceMix,
   fetchSourceMixOverTime,
 } from '@/lib/data';
+import { usePracticeData } from '@/lib/practice';
 import MonthlyTrend from '@/components/dashboard/MonthlyTrend';
 import NewVsReturningChart from '@/components/dashboard/NewVsReturningChart';
 import SourceStackedBar from '@/components/dashboard/SourceStackedBar';
@@ -40,6 +42,21 @@ const PatientAcquisition = () => {
   // funnel; the ad-click step lives on the Paid Ads tab.
   const inClinicFunnelSteps = quizFunnel.data?.steps.slice(1) ?? [];
 
+  // Overlay user-entered actuals on the mock monthly series so charts show
+  // real numbers as the practice enters them.
+  const { data: practice } = usePracticeData();
+  const monthlyMerged = useMemo(() => {
+    if (!monthlyPatients.data) return undefined;
+    return monthlyPatients.data.map(d => {
+      const a = practice.actualsByMonth[d.month];
+      return {
+        ...d,
+        newPatients: a?.newPatients ?? d.newPatients,
+        returning: a?.returningPatients ?? d.returning,
+      };
+    });
+  }, [monthlyPatients.data, practice.actualsByMonth]);
+
   return (
     <div className="space-y-4">
       <header>
@@ -48,11 +65,11 @@ const PatientAcquisition = () => {
       </header>
 
       {/* Monthly new patients — full width */}
-      {monthlyPatients.data ? (
+      {monthlyMerged ? (
         <MonthlyTrend
           title="New patients per month"
           subtitle="Trailing 12 months"
-          data={monthlyPatients.data.map(d => ({ month: d.month, value: d.newPatients }))}
+          data={monthlyMerged.map(d => ({ month: d.month, value: d.newPatients }))}
           format={fmtInt}
         />
       ) : (
@@ -61,8 +78,8 @@ const PatientAcquisition = () => {
 
       {/* New vs Returning | Source over time */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {monthlyPatients.data ? (
-          <NewVsReturningChart data={monthlyPatients.data} />
+        {monthlyMerged ? (
+          <NewVsReturningChart data={monthlyMerged} />
         ) : (
           <Skeleton className="h-72 w-full rounded-xl" />
         )}

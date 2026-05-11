@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Target } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -12,30 +13,50 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useTargets } from '@/lib/targets';
+import {
+  TARGET_FIELDS,
+  effectiveTargets,
+  isoMonth,
+  usePracticeData,
+  type MonthlyTargets,
+} from '@/lib/practice';
+
+const blankDraft = (defaults: MonthlyTargets, override: MonthlyTargets): Record<string, string> => {
+  const out: Record<string, string> = {};
+  for (const f of TARGET_FIELDS) {
+    const v = override[f.key] ?? defaults[f.key];
+    out[f.key] = v != null ? String(v) : '';
+  }
+  return out;
+};
 
 const TargetsDialog = () => {
-  const [targets, update] = useTargets();
+  const { data, setDefaults, setTargets, clearTargets } = usePracticeData();
   const [open, setOpen] = useState(false);
-  const [revenueDraft, setRevenueDraft] = useState(String(targets.monthlyRevenue));
-  const [patientsDraft, setPatientsDraft] = useState(String(targets.monthlyNewPatients));
+  const [scope, setScope] = useState<'default' | 'month'>('default');
+  const month = isoMonth();
+  const monthOverride = data.targetsByMonth[month] ?? {};
+  const [draft, setDraft] = useState<Record<string, string>>(() =>
+    blankDraft(data.defaults, scope === 'month' ? monthOverride : {}),
+  );
 
-  // Re-seed drafts whenever the dialog opens with the latest stored values.
   useEffect(() => {
     if (open) {
-      setRevenueDraft(String(targets.monthlyRevenue));
-      setPatientsDraft(String(targets.monthlyNewPatients));
+      setDraft(blankDraft(scope === 'default' ? data.defaults : effectiveTargets(data, month), scope === 'month' ? monthOverride : {}));
     }
-  }, [open, targets.monthlyRevenue, targets.monthlyNewPatients]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, scope, month]);
 
   const handleSave = () => {
-    const revenue = Number(revenueDraft.replace(/[^0-9.]/g, ''));
-    const patients = Number(patientsDraft.replace(/[^0-9.]/g, ''));
-    update({
-      monthlyRevenue: Number.isFinite(revenue) && revenue >= 0 ? Math.round(revenue) : targets.monthlyRevenue,
-      monthlyNewPatients:
-        Number.isFinite(patients) && patients >= 0 ? Math.round(patients) : targets.monthlyNewPatients,
-    });
+    const cleaned: MonthlyTargets = {};
+    for (const f of TARGET_FIELDS) {
+      const raw = draft[f.key]?.trim();
+      if (!raw) continue;
+      const n = Number(raw.replace(/[^0-9.]/g, ''));
+      if (Number.isFinite(n) && n >= 0) cleaned[f.key] = Math.round(n * 100) / 100;
+    }
+    if (scope === 'default') setDefaults(cleaned);
+    else setTargets(month, cleaned);
     setOpen(false);
   };
 
@@ -47,43 +68,86 @@ const TargetsDialog = () => {
           <span className="hidden sm:inline">Targets</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Monthly targets</DialogTitle>
           <DialogDescription>
-            Drive the pacing visualizations on the Revenue and Patient Acquisition tabs. Saved
-            locally on this device.
+            Set goals for the practice. Defaults apply to every month; per-month overrides take
+            precedence when present.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="target-revenue">Monthly revenue ($)</Label>
-            <Input
-              id="target-revenue"
-              inputMode="numeric"
-              value={revenueDraft}
-              onChange={e => setRevenueDraft(e.target.value)}
-              placeholder="120000"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="target-patients">Monthly new patients</Label>
-            <Input
-              id="target-patients"
-              inputMode="numeric"
-              value={patientsDraft}
-              onChange={e => setPatientsDraft(e.target.value)}
-              placeholder="60"
-            />
-          </div>
+        <div role="tablist" className="inline-flex rounded-lg border border-border p-0.5 bg-muted/30 text-xs">
+          <button
+            role="tab"
+            aria-selected={scope === 'default'}
+            onClick={() => setScope('default')}
+            className={`px-3 py-1.5 rounded-md font-medium ${scope === 'default' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'}`}
+          >
+            Default (all months)
+          </button>
+          <button
+            role="tab"
+            aria-selected={scope === 'month'}
+            onClick={() => setScope('month')}
+            className={`px-3 py-1.5 rounded-md font-medium ${scope === 'month' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'}`}
+          >
+            Override · {month}
+          </button>
         </div>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave}>Save</Button>
+        <div className="space-y-3 py-1">
+          {TARGET_FIELDS.map(f => (
+            <div key={f.key} className="grid grid-cols-[1fr_140px] items-center gap-3">
+              <Label htmlFor={`tgt-${f.key}`}>
+                {f.label}
+                <span className="text-[10px] text-muted-foreground ml-1.5">
+                  {f.unit === 'usd' ? '($)' : f.unit === 'pct' ? '(%)' : '(count)'}
+                </span>
+              </Label>
+              <Input
+                id={`tgt-${f.key}`}
+                inputMode="numeric"
+                value={draft[f.key] ?? ''}
+                onChange={e => setDraft(d => ({ ...d, [f.key]: e.target.value }))}
+                placeholder={scope === 'month' ? `default ${data.defaults[f.key] ?? '—'}` : ''}
+              />
+            </div>
+          ))}
+        </div>
+
+        <p className="text-[11px] text-muted-foreground">
+          Need to set a target for a different month or back-fill prior periods?{' '}
+          <Link
+            to="/data"
+            className="text-primary hover:underline"
+            onClick={() => setOpen(false)}
+          >
+            Open the full data editor →
+          </Link>
+        </p>
+
+        <DialogFooter className="flex flex-row sm:justify-between gap-2">
+          {scope === 'month' && Object.keys(monthOverride).length > 0 ? (
+            <Button
+              variant="ghost"
+              className="text-destructive hover:text-destructive"
+              onClick={() => {
+                clearTargets(month);
+                setOpen(false);
+              }}
+            >
+              Clear override
+            </Button>
+          ) : (
+            <span />
+          )}
+          <div className="flex gap-2 justify-end">
+            <Button variant="ghost" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave}>Save</Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
