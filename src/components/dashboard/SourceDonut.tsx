@@ -2,6 +2,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { fmtInt, fmtPct } from '@/lib/format';
 import type { SourceShare } from '@/lib/data';
 import { SOURCE_COLOR } from './sourcePalette';
+import EmptyState from './EmptyState';
 
 interface Props {
   title?: string;
@@ -11,8 +12,21 @@ interface Props {
 const SourceDonut = ({ title = 'Traffic source mix', data }: Props) => {
   const total = data.reduce((a, r) => a + r.count, 0);
 
+  if (total === 0) {
+    return (
+      <div className="bg-card rounded-xl p-4 shadow-sm border border-border">
+        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+        <EmptyState message="No new patients in this window." />
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-card rounded-xl p-4 shadow-sm border border-border">
+    <div
+      className="bg-card rounded-xl p-4 shadow-sm border border-border"
+      role="region"
+      aria-label={title}
+    >
       <div className="flex items-baseline justify-between mb-2">
         <h2 className="text-sm font-semibold text-foreground">{title}</h2>
         <p className="text-xs text-muted-foreground">{fmtInt(total)} patients</p>

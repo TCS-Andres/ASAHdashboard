@@ -13,6 +13,7 @@ import {
 import { activeClient } from '@/config/clients';
 import { DateRangeProvider, PRESET_LABELS, useDateRange, type DateRangePreset } from '@/lib/dateRange';
 import TargetsDialog from '@/components/layout/TargetsDialog';
+import ThemeToggle from '@/components/layout/ThemeToggle';
 
 const navItems = [
   { to: '/overview', icon: LayoutDashboard, label: 'Executive Overview' },
@@ -118,6 +119,7 @@ const Shell = () => {
           </button>
           <h2 className="text-base font-semibold text-foreground">Marketing Dashboard</h2>
           <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
             <TargetsDialog />
             <DateRangePicker />
             <ClientSwitcher />

@@ -125,7 +125,7 @@ const StrategyNotes = () => {
               </div>
 
               {entry.body && (
-                <div className="prose prose-sm max-w-none mt-3 text-foreground/90 prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary">
+                <div className="prose prose-sm dark:prose-invert max-w-none mt-3 prose-p:my-2 prose-ul:my-2 prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary">
                   <ReactMarkdown>{entry.body}</ReactMarkdown>
                 </div>
               )}

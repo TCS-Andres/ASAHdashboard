@@ -34,7 +34,11 @@ const SpendOverTimeChart = ({ points }: Props) => {
   const total = points.reduce((a, p) => a + p.spend, 0);
 
   return (
-    <div className="bg-card rounded-xl p-4 shadow-sm border border-border">
+    <div
+      className="bg-card rounded-xl p-4 shadow-sm border border-border"
+      role="region"
+      aria-label="Ad spend over time"
+    >
       <div className="flex items-baseline justify-between mb-2">
         <h2 className="text-sm font-semibold text-foreground">Ad spend over time</h2>
         <p className="text-xs text-muted-foreground">{fmtCurrency(total)} total</p>

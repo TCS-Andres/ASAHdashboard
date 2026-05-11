@@ -26,7 +26,11 @@ const FollowerChart = ({ data, channel }: Props) => {
   const netLabel = net >= 0 ? `+${fmtInt(net)}` : fmtInt(net);
 
   return (
-    <div className="bg-card rounded-xl p-4 shadow-sm border border-border">
+    <div
+      className="bg-card rounded-xl p-4 shadow-sm border border-border"
+      role="region"
+      aria-label={`Follower growth — ${channel}`}
+    >
       <div className="flex items-baseline justify-between mb-2">
         <h2 className="text-sm font-semibold text-foreground">Follower growth</h2>
         <p className="text-xs text-muted-foreground">

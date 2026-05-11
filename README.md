@@ -103,7 +103,17 @@ should appear as a hardcoded string anywhere outside that config.
    spend timeline, ad-click-to-lead quiz funnel, Brevo deep-link).
 7. ~~Strategy & Notes~~ — done (dated entries with markdown body + preset
    tags, add/edit/delete via dialog, in-memory state with seed entries).
-8. Polish (empty states, loading states, responsive, dark mode, a11y)
+8. ~~Polish~~ — done (dark mode wired through `next-themes` with a warm
+   slate token block, theme toggle in topbar, `EmptyState` component +
+   chart-card a11y regions/labels, tightened markdown paragraph spacing
+   with `prose-invert` for dark, responsive verified at 375 + 1280).
+
+## MVP done
+
+All six tabs render production-quality with mocked data, both light and
+dark modes. No PHI anywhere in the codebase. Editable targets persist in
+`localStorage` and drive the pacing visualization. Brevo deep-link is the
+contacts surface.
 
 ## Out of scope for MVP
 

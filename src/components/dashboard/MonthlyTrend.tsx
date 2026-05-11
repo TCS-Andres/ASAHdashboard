@@ -10,6 +10,7 @@ import {
   YAxis,
 } from 'recharts';
 import { fmtMonthShort } from '@/lib/format';
+import EmptyState from './EmptyState';
 
 interface Props {
   title: string;
@@ -33,13 +34,21 @@ const MonthlyTrend = ({
   height = 240,
 }: Props) => {
   const rows = data.map(d => ({ ...d, monthLabel: fmtMonthShort(d.month) }));
+  const allZero = rows.every(r => r.value === 0);
 
   return (
-    <div className="bg-card rounded-xl p-4 shadow-sm border border-border">
+    <div
+      className="bg-card rounded-xl p-4 shadow-sm border border-border"
+      role="region"
+      aria-label={title}
+    >
       <div className="flex items-baseline justify-between mb-2">
         <h2 className="text-sm font-semibold text-foreground">{title}</h2>
         {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
       </div>
+      {rows.length === 0 || allZero ? (
+        <EmptyState compact message="No values in this window." />
+      ) : (
       <div style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
           {kind === 'bar' ? (
@@ -80,6 +89,7 @@ const MonthlyTrend = ({
           )}
         </ResponsiveContainer>
       </div>
+      )}
     </div>
   );
 };

@@ -24,7 +24,11 @@ const SourceStackedBar = ({ data }: Props) => {
   })) as Array<Record<string, number | string>>;
 
   return (
-    <div className="bg-card rounded-xl p-4 shadow-sm border border-border">
+    <div
+      className="bg-card rounded-xl p-4 shadow-sm border border-border"
+      role="region"
+      aria-label="Patient source mix over time"
+    >
       <div className="flex items-baseline justify-between mb-2">
         <h2 className="text-sm font-semibold text-foreground">Source mix over time</h2>
         <p className="text-xs text-muted-foreground">Trailing 12 months</p>

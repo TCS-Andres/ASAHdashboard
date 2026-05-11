@@ -19,7 +19,11 @@ const NewVsReturningChart = ({ data }: Props) => {
   const rows = data.map(d => ({ ...d, monthLabel: fmtMonthShort(d.month) }));
 
   return (
-    <div className="bg-card rounded-xl p-4 shadow-sm border border-border">
+    <div
+      className="bg-card rounded-xl p-4 shadow-sm border border-border"
+      role="region"
+      aria-label="New vs. returning patients"
+    >
       <div className="flex items-baseline justify-between mb-2">
         <h2 className="text-sm font-semibold text-foreground">New vs. returning patients</h2>
         <p className="text-xs text-muted-foreground">Trailing 12 months</p>
