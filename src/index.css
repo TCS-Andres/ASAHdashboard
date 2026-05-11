@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 60 14% 95%;
+    --foreground: 0 0% 18%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 18%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 18%;
+
+    --primary: 153 16% 49%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 36 50% 62%;
+    --secondary-foreground: 0 0% 18%;
+
+    --muted: 150 20% 92%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 14 30% 52%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 15% 88%;
+    --input: 150 15% 88%;
+    --ring: 153 16% 49%;
+
+    --radius: 0.75rem;
+
+    --sage: 153 16% 49%;
+    --sage-light: 150 20% 92%;
+    --cream: 60 14% 95%;
+    --mustard: 36 50% 62%;
+    --terracotta: 14 30% 52%;
+    --charcoal: 0 0% 18%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: 'Zilla Slab', 'Rockwell', Georgia, serif;
+  }
+}
+
+@layer components {
+  .quiz-card {
+    @apply bg-card rounded-2xl p-5 cursor-pointer transition-all duration-200;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .quiz-card:hover {
+    @apply bg-muted;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transform: scale(1.02);
+  }
+
+  .quiz-card.selected {
+    @apply bg-muted ring-2 ring-primary;
+  }
+
+  .quiz-btn {
+    @apply bg-primary text-primary-foreground font-semibold py-4 px-8 rounded-2xl text-lg transition-all duration-200;
+    box-shadow: 0 4px 14px hsl(var(--sage) / 0.3);
+  }
+
+  .quiz-btn:hover {
+    filter: brightness(1.08);
+    box-shadow: 0 6px 20px hsl(var(--sage) / 0.4);
+  }
+
+  .quiz-btn:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .sunburst {
+    background: radial-gradient(ellipse at bottom center, hsl(var(--mustard) / 0.2) 0%, transparent 60%);
+  }
+}
