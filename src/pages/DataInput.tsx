@@ -51,12 +51,31 @@ const DataInput = () => {
           <h1 className="text-2xl font-bold text-foreground">Data</h1>
           <p className="text-sm text-muted-foreground">
             Enter monthly actuals and per-month target overrides. Anything left blank uses the
-            mock fallback or the default target.
+            default target or the mock fallback.
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => setView(v => (v === 'actuals' ? 'targets' : 'actuals'))}>
-          Switch to {view === 'actuals' ? 'Targets' : 'Actuals'}
-        </Button>
+        <div role="tablist" className="inline-flex rounded-lg border border-border p-0.5 bg-muted/30 text-xs">
+          <button
+            role="tab"
+            aria-selected={view === 'actuals'}
+            onClick={() => setView('actuals')}
+            className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+              view === 'actuals' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
+            }`}
+          >
+            Actuals
+          </button>
+          <button
+            role="tab"
+            aria-selected={view === 'targets'}
+            onClick={() => setView('targets')}
+            className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+              view === 'targets' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
+            }`}
+          >
+            Targets
+          </button>
+        </div>
       </header>
 
       <div className="bg-card rounded-xl border border-border shadow-sm p-4 space-y-2">
@@ -251,12 +270,6 @@ interface CellInputProps {
 
 const CellInput = ({ value, placeholder, unit, onCommit }: CellInputProps) => {
   const [local, setLocal] = useState(value != null ? String(value) : '');
-
-  // Re-seed when external value changes (e.g. row cleared, store reloaded).
-  if (value !== undefined && local === '' && String(value) !== local) {
-    // Run once per render when external value differs and local isn't being typed.
-    // This is fine because we don't sync on every keystroke.
-  }
 
   const commit = () => {
     const trimmed = local.trim();

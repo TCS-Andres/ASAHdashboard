@@ -17,7 +17,7 @@ const SocialMedia = () => {
   const [view, setView] = useState<View>('Compare');
   const opts = { from: range.from, to: range.to };
   const keyBase = [range.preset, range.from.toISOString(), range.to.toISOString()];
-  const vsLabel = `vs. previous ${PRESET_LABELS[range.preset].toLowerCase()}`;
+  const vsLabel = 'vs. prior period';
 
   const comparison = useQuery({
     queryKey: ['social-comparison', ...keyBase],

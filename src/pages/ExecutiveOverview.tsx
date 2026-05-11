@@ -51,7 +51,7 @@ const ExecutiveOverview = () => {
   const sourceMix = useQuery({ queryKey: ['source-mix', ...keyBase], queryFn: () => fetchSourceMix(opts) });
   const funnel = useQuery({ queryKey: ['acq-funnel', ...keyBase], queryFn: () => fetchAcquisitionFunnel(opts) });
 
-  const vsLabel = `vs. previous ${PRESET_LABELS[range.preset].toLowerCase()}`;
+  const vsLabel = 'vs. prior period';
 
   return (
     <div className="space-y-6">

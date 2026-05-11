@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Pencil } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useDateRange, PRESET_LABELS } from '@/lib/dateRange';
 import {
   fetchMonthlyPatients,
@@ -59,9 +61,18 @@ const PatientAcquisition = () => {
 
   return (
     <div className="space-y-4">
-      <header>
-        <h1 className="text-2xl font-bold text-foreground">Patient Acquisition</h1>
-        <p className="text-sm text-muted-foreground">{PRESET_LABELS[range.preset]}</p>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Patient Acquisition</h1>
+          <p className="text-sm text-muted-foreground">{PRESET_LABELS[range.preset]}</p>
+        </div>
+        <Link
+          to="/data"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-2.5 py-1.5"
+        >
+          <Pencil size={12} />
+          Edit numbers
+        </Link>
       </header>
 
       {/* Monthly new patients — full width */}

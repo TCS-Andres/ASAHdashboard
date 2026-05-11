@@ -1,9 +1,10 @@
-// In-memory note entries for the Strategy & Notes tab.
-// Per the spec, MVP uses local state with seed data — persistence comes
-// later (likely server-side once auth lands).
+// Strategy & Notes journal entries, persisted per client in localStorage.
 //
-// Reminder: notes are operational/marketing context, not patient data.
-// The UI surfaces this caveat to discourage anyone from typing PHI here.
+// Notes are operational / marketing context — not patient data. The UI
+// surfaces this caveat to discourage anyone from typing PHI here.
+
+import { useEffect, useState } from 'react';
+import { activeClient } from '@/config/clients';
 
 export interface NoteEntry {
   id: string;
@@ -73,3 +74,67 @@ Briefing new creative around "kids who clench at night" and the school-performan
 ];
 
 export { today };
+
+// ─── Persistence ───────────────────────────────────────────────────────────
+
+const KEY = (clientId: string) => `asah:notes:${clientId}`;
+const CHANGE_EVENT = 'asah:notes-changed';
+
+function readNotes(clientId: string): NoteEntry[] {
+  if (typeof window === 'undefined') return SEED_NOTES;
+  try {
+    const raw = localStorage.getItem(KEY(clientId));
+    if (!raw) return SEED_NOTES;
+    const parsed = JSON.parse(raw) as NoteEntry[];
+    if (!Array.isArray(parsed)) return SEED_NOTES;
+    return parsed;
+  } catch {
+    return SEED_NOTES;
+  }
+}
+
+function writeNotes(clientId: string, notes: NoteEntry[]): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(KEY(clientId), JSON.stringify(notes));
+  window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: { clientId } }));
+}
+
+export function useNotes(): {
+  notes: NoteEntry[];
+  save: (entry: NoteEntry) => void;
+  remove: (id: string) => void;
+  reset: () => void;
+} {
+  const [notes, set] = useState<NoteEntry[]>(() => readNotes(activeClient.id));
+
+  useEffect(() => {
+    const onChange = () => set(readNotes(activeClient.id));
+    window.addEventListener(CHANGE_EVENT, onChange);
+    window.addEventListener('storage', onChange);
+    return () => {
+      window.removeEventListener(CHANGE_EVENT, onChange);
+      window.removeEventListener('storage', onChange);
+    };
+  }, []);
+
+  const save = (entry: NoteEntry) => {
+    const current = readNotes(activeClient.id);
+    const exists = current.some(e => e.id === entry.id);
+    const next = exists ? current.map(e => (e.id === entry.id ? entry : e)) : [entry, ...current];
+    writeNotes(activeClient.id, next);
+    set(next);
+  };
+
+  const remove = (id: string) => {
+    const next = readNotes(activeClient.id).filter(e => e.id !== id);
+    writeNotes(activeClient.id, next);
+    set(next);
+  };
+
+  const reset = () => {
+    writeNotes(activeClient.id, SEED_NOTES);
+    set(SEED_NOTES);
+  };
+
+  return { notes, save, remove, reset };
+}

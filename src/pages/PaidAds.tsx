@@ -19,7 +19,7 @@ const PaidAds = () => {
   const { range } = useDateRange();
   const opts = { from: range.from, to: range.to };
   const keyBase = [range.preset, range.from.toISOString(), range.to.toISOString()];
-  const vsLabel = `vs. previous ${PRESET_LABELS[range.preset].toLowerCase()}`;
+  const vsLabel = 'vs. prior period';
   const contacts = activeClient.externalLinks.contactsTool;
 
   // MVP focuses on Meta; structure already supports All/Google when we light those up.
@@ -146,9 +146,7 @@ const PaidAds = () => {
       </section>
 
       <p className="text-[11px] text-muted-foreground/80">
-        Individual lead names, contact info, and quiz responses are never shown here. Use the
-        "{contacts.label}" link to see contact-level detail in {activeClient.shortName}'s
-        canonical contacts tool.
+        Lead-level detail (names, contact info, quiz responses) lives in Brevo, not here.
       </p>
     </div>
   );

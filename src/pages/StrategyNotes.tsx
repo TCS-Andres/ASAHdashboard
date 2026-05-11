@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import { Plus, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NoteEditor from '@/components/dashboard/NoteEditor';
-import { SEED_NOTES, type NoteEntry } from '@/lib/notes';
+import { useNotes, type NoteEntry } from '@/lib/notes';
 
 const TAG_STYLE: Record<string, string> = {
   campaign: 'bg-primary/10 text-primary',
@@ -24,25 +24,17 @@ const formatDate = (iso: string): string => {
 };
 
 const StrategyNotes = () => {
-  const [entries, setEntries] = useState<NoteEntry[]>(SEED_NOTES);
+  const { notes, save, remove } = useNotes();
   const [editing, setEditing] = useState<NoteEntry | null>(null);
   const [open, setOpen] = useState(false);
 
   const sorted = useMemo(
-    () => [...entries].sort((a, b) => b.date.localeCompare(a.date)),
-    [entries],
+    () => [...notes].sort((a, b) => b.date.localeCompare(a.date)),
+    [notes],
   );
 
-  const handleSave = (entry: NoteEntry) => {
-    setEntries(prev => {
-      const exists = prev.some(e => e.id === entry.id);
-      return exists ? prev.map(e => (e.id === entry.id ? entry : e)) : [entry, ...prev];
-    });
-  };
-
-  const handleDelete = (id: string) => {
-    setEntries(prev => prev.filter(e => e.id !== id));
-  };
+  const handleSave = (entry: NoteEntry) => save(entry);
+  const handleDelete = (id: string) => remove(id);
 
   return (
     <div className="space-y-4">
@@ -67,7 +59,7 @@ const StrategyNotes = () => {
 
       <p className="text-[11px] text-muted-foreground/80">
         Notes are operational and marketing-focused. Do not include patient names or any health
-        information. MVP: notes are not persisted across reloads.
+        information.
       </p>
 
       {sorted.length === 0 ? (
