@@ -4,7 +4,7 @@ import { activeClient } from '@/config/clients';
 
 const PaidAds = () => {
   const { range } = useDateRange();
-  const leadTool = activeClient.externalLinks.leadTool;
+  const contacts = activeClient.externalLinks.contactsTool;
   return (
     <div className="space-y-4">
       <header className="flex flex-wrap items-start justify-between gap-3">
@@ -13,18 +13,18 @@ const PaidAds = () => {
           <p className="text-sm text-muted-foreground">{PRESET_LABELS[range.preset]}</p>
         </div>
         <a
-          href={leadTool.url}
+          href={contacts.url}
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-1.5 text-sm bg-primary text-primary-foreground px-3 py-1.5 rounded-lg font-medium hover:brightness-110"
         >
-          {leadTool.label}
+          {contacts.label}
           <ExternalLink size={14} />
         </a>
       </header>
       <div className="bg-card rounded-xl p-12 text-center shadow-sm border border-border">
         <p className="text-muted-foreground">
-          Phase 6 will fill this with Meta campaign metrics, spend trends, and the quiz funnel. Individual lead data lives in the CRM, not here.
+          Phase 6 will fill this with Meta campaign metrics, spend trends, and the quiz funnel. Individual contacts live in Brevo, not here.
         </p>
       </div>
     </div>

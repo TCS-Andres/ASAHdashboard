@@ -90,9 +90,10 @@ should appear as a hardcoded string anywhere outside that config.
 ## Build phases
 
 1. ~~Audit~~ — done.
-2. ~~Scaffold~~ — done (this commit).
-3. Mock data layer
-4. Executive Overview
+2. ~~Scaffold~~ — done.
+3. ~~Mock data layer~~ — done.
+4. ~~Executive Overview~~ — done (KPI strip, 12-month dual-axis trend,
+   signals panel, source donut, marketing funnel).
 5. Patient Acquisition + Revenue
 6. Social Media + Paid Ads
 7. Strategy & Notes
@@ -106,9 +107,34 @@ should appear as a hardcoded string anywhere outside that config.
 - Email/SMS notifications
 - PDF export
 
-## Open questions to resolve before Phase 4
+## Editable targets
+
+Monthly revenue and monthly new-patient targets are **user-editable** via
+the "Targets" button in the top bar. Values are persisted per-client in
+`localStorage` (key `asah:targets:<clientId>`). The pacing visualizations
+on the Revenue and Patient Acquisition tabs read these values via the
+`useTargets()` hook in [src/lib/targets.ts](src/lib/targets.ts).
+
+Targets are **not** PHI — they're operational goals. Storing them in
+`localStorage` is HIPAA-safe.
+
+## Brevo, not a CRM
+
+ASAH does not run a CRM. Brevo is their email-marketing tool and the
+canonical place for individual contact detail. The dashboard never holds
+contact PII; the "View contacts in Brevo" deep-link in
+[client config](src/config/clients/austin-sleep.ts) is how the team gets
+to individual records.
+
+If we add an Email Marketing surface later (Brevo campaign sends, opens,
+clicks, unsubscribes), it would slot under Social Media (or rename that
+tab "Channels"). No commitment yet.
+
+## Open questions
 
 - Which practice management software does Austin Sleep use?
-- Which CRM holds the quiz leads? (Sets the real `leadTool.url` in client config.)
-- Monthly revenue and patient acquisition targets? (Drives MTD pacing.)
+  (Determines patient-count + revenue extraction.)
+- Where do the quiz submissions land currently — the Sleep Quiz Supabase
+  project, Brevo, or somewhere else? (Affects the deep-link target.)
 - Final brand primary color (currently using the sage from the brand kit).
+- Add Brevo email metrics as a section/tab? (See "Brevo, not a CRM" above.)

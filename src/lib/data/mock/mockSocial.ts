@@ -17,11 +17,13 @@ import {
   toISODate,
 } from '../helpers';
 import type {
+  Delta,
   FetchOptions,
   FollowerPoint,
   SocialChannel,
   SocialChannelMetrics,
   SocialKpis,
+  Sparkline,
   TopPost,
 } from '../types';
 
@@ -204,6 +206,32 @@ function buildTopPosts(
       publishedAt: toISODate(date),
     };
   });
+}
+
+/**
+ * Total reach across all social channels with delta vs. prior window and
+ * a daily impressions sparkline (summed across channels).
+ */
+export function fetchSocialReachKpi(opts: FetchOptions): Promise<Delta & { sparkline: Sparkline }> {
+  const channels = Object.keys(CHANNEL_SEEDS) as SocialChannel[];
+
+  const dailyReach = (date: Date): number =>
+    channels.reduce((sum, ch) => {
+      const base = CHANNEL_SEEDS[ch].reachPerDay;
+      const dow = date.getDay();
+      const dowFactor = dow === 0 || dow === 6 ? 0.85 : 1.0;
+      const rng = seededRng(anchorSeed(`social:${ch}:reach:${toISODate(date)}`));
+      return sum + Math.max(0, Math.round(jitter(rng, base * dowFactor, 0.18)));
+    }, 0);
+
+  const points = buildDailySeries(opts, dailyReach);
+  const current = points.reduce((a, p) => a + p.value, 0);
+
+  const prevOpts = previousWindow(opts);
+  const prevPoints = buildDailySeries(prevOpts, dailyReach);
+  const previous = prevPoints.reduce((a, p) => a + p.value, 0);
+
+  return ok({ ...makeDelta(current, previous), sparkline: { points } });
 }
 
 // Returning a daily sparkline of impressions for the channel — handy for

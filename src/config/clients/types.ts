@@ -8,9 +8,19 @@ export interface ClientConfig {
   fiscalYearStart: string;
   locations: string[];
   externalLinks: {
-    leadTool: { label: string; url: string };
+    /**
+     * Where individual contacts and quiz leads live. ASAH uses Brevo for
+     * email marketing; the dashboard never holds PII, so this deep-link
+     * is how the team accesses contact detail.
+     */
+    contactsTool: { label: string; url: string };
   };
-  targets: {
+  /**
+   * Default monthly targets, used as the seed value for the editable
+   * targets store. The live values that drive pacing visualizations
+   * come from src/lib/targets.ts and may be overridden by the user.
+   */
+  defaultTargets: {
     monthlyRevenue: number;
     monthlyNewPatients: number;
   };

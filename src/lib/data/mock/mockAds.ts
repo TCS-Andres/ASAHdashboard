@@ -5,19 +5,24 @@
 
 import {
   anchorSeed,
+  buildDailySeries,
   clamp,
+  eachDay,
   jitter,
+  makeDelta,
   ok,
+  previousWindow,
   round,
   seededRng,
   toISODate,
-  eachDay,
 } from '../helpers';
 import type {
   AdSpendPoint,
   CampaignRow,
   Channel,
+  Delta,
   FetchOptions,
+  Sparkline,
 } from '../types';
 import { __internal as R } from './mockRevenue';
 
@@ -66,6 +71,30 @@ export function fetchAdCampaigns(
 
   const rows = seeds.map(seed => buildCampaignRow(seed, opts));
   return ok(rows);
+}
+
+/** Total ad spend for the window across all channels, with sparkline + delta. */
+export function fetchAdSpendKpi(opts: FetchOptions): Promise<Delta & { sparkline: Sparkline }> {
+  const channels: Channel[] = ['Meta', 'Google'];
+  const dailyTotal = (date: Date) =>
+    channels.reduce((sum, ch) => {
+      const monthly =
+        ch === 'Meta' ? R.CHANNEL_SPEND_BASE['Facebook Ads'] : R.CHANNEL_SPEND_BASE['Google Ads'];
+      const baseDaily = monthly / 30;
+      const dow = date.getDay();
+      const dowFactor = dow === 0 || dow === 6 ? 0.75 : dow >= 1 && dow <= 3 ? 1.12 : 1.0;
+      const rng = seededRng(anchorSeed(`ads:${ch}:spend:${toISODate(date)}`));
+      return sum + Math.max(0, Math.round(jitter(rng, baseDaily * dowFactor, 0.18)));
+    }, 0);
+
+  const sparkPoints = buildDailySeries(opts, dailyTotal);
+  const current = sparkPoints.reduce((a, p) => a + p.value, 0);
+
+  const prevOpts = previousWindow(opts);
+  const prevPoints = buildDailySeries(prevOpts, dailyTotal);
+  const previous = prevPoints.reduce((a, p) => a + p.value, 0);
+
+  return ok({ ...makeDelta(current, previous), sparkline: { points: sparkPoints } });
 }
 
 /** Daily spend series across the window per channel (or All combined). */

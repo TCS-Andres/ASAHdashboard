@@ -24,12 +24,14 @@ export {
 
 export {
   fetchAdCampaigns,
+  fetchAdSpendKpi,
   fetchAdSpendOverTime,
 } from './mock/mockAds';
 
 export {
   fetchSocialChannel,
   fetchSocialComparison,
+  fetchSocialReachKpi,
   fetchChannelImpressionSparkline,
 } from './mock/mockSocial';
 

@@ -187,14 +187,16 @@ export function fetchChannelRoas(opts: FetchOptions): Promise<ChannelRoas[]> {
  * Month-to-date pacing vs. monthly target, with end-of-month projection.
  * `opts` is unused — pacing is always for the current month relative to
  * `today`, since that's how the spec frames it. Accepted for API symmetry.
+ * `targetOverride` lets callers pass the user-edited target from the
+ * targets store; falls back to the client config default.
  */
-export function fetchPacing(opts: FetchOptions): Promise<Pacing> {
+export function fetchPacing(opts: FetchOptions, targetOverride?: number): Promise<Pacing> {
   void opts;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const monthStart = startOfMonth(today);
   const monthEnd = endOfMonth(today);
-  const target = activeClient.targets.monthlyRevenue;
+  const target = targetOverride ?? activeClient.defaultTargets.monthlyRevenue;
   const totalDaysInMonth = monthEnd.getDate();
   const dayOfMonth = today.getDate();
 

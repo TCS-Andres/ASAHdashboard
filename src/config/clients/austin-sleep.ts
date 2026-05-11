@@ -12,12 +12,14 @@ export const austinSleep: ClientConfig = {
   locations: ['Austin, TX'],
 
   externalLinks: {
-    // Placeholder — replace with the real CRM / lead tool URL once decided.
-    leadTool: { label: 'View leads in CRM', url: 'https://example.com/leads' },
+    // Brevo is the email/contacts tool for ASAH (they don't run a CRM).
+    // The dashboard deep-links here for individual contact detail.
+    contactsTool: { label: 'View contacts in Brevo', url: 'https://app.brevo.com/contact/list' },
   },
 
-  targets: {
-    // Placeholders — confirm with practice before Phase 4.
+  // Seeds the editable targets store. Real values are set by the user
+  // via the Targets dialog and persisted in localStorage.
+  defaultTargets: {
     monthlyRevenue: 120_000,
     monthlyNewPatients: 60,
   },

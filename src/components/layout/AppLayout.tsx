@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { activeClient } from '@/config/clients';
 import { DateRangeProvider, PRESET_LABELS, useDateRange, type DateRangePreset } from '@/lib/dateRange';
+import TargetsDialog from '@/components/layout/TargetsDialog';
 
 const navItems = [
   { to: '/overview', icon: LayoutDashboard, label: 'Executive Overview' },
@@ -116,7 +117,8 @@ const Shell = () => {
             <Menu size={20} />
           </button>
           <h2 className="text-base font-semibold text-foreground">Marketing Dashboard</h2>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2">
+            <TargetsDialog />
             <DateRangePicker />
             <ClientSwitcher />
           </div>
